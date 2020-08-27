@@ -1,0 +1,22 @@
+{
+  "name": "curso_das",
+  "version": "1.0.0",
+  "description": "Activivdad 11. Impleentacón de algoritmos de cifrado ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/CarlosSanchez1594/encryption_activity.git"
+  },
+  "keywords": [
+    "encryption"
+  ],
+  "author": "Carlos Alfredo Sánchez Nieto",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CarlosSanchez1594/encryption_activity/issues"
+  },
+  "homepage": "https://github.com/CarlosSanchez1594/encryption_activity#readme"
+}
