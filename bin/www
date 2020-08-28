@@ -1,0 +1,140 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('sample:server');
+var http = require('http');
+const crypto = require('crypto');
+const NodeRSA = require('node-rsa');
+const key = new NodeRSA({b: 512});
+key.generateKeyPair();
+const publicKey = key.exportKey("public");
+const privateKey = key.exportKey("private");
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+    console.log("==== BEGIN CIFRADO SIMETRICO (AES) ====");
+    var text = "My super secret text!"
+    console.log('text --> ' + text);
+    var key = "52feEA1vRw";
+    console.log('key --> ' + key);
+    var encryptMessage = encode(text,key);
+    console.log('Dato cifrado --> ' + encryptMessage);
+    console.log('Dato descifrado --> ' + decode(encryptMessage, key));
+    console.log("==== END CIFRADO SIMETRICO (AES) ====");
+    console.log("\n");
+    console.log("\n");
+    console.log("\n");
+    console.log("==== BEGIN CIFRADO ASIMETRICO (RSA) ====");
+    var text = "This is the number of my credit card 5121675834561238 and the CVC is 847. Hackers please dont hack me"
+    console.log('text --> ' + text);
+    console.log('privateKey --> ' + privateKey);
+    console.log('publicKey --> ' + publicKey);
+
+    var encryptMessage = encodeRSA(text,key);
+    console.log('Dato cifrado --> ' + encryptMessage);
+    console.log('Dato descifrado --> ' + decodeRSA(encryptMessage, key));
+    console.log("==== END CIFRADO ASIMETRICO (RSA) ====");
+}
+
+function encode(text, key){
+    const myKey = crypto.createCipher('aes-128-cbc', key);
+    var mystr = myKey.update(text, 'utf8', 'hex');
+    mystr += myKey.final('hex');
+    return (mystr);
+}
+
+function decode(message, key){
+    const myKey = crypto.createDecipher('aes-128-cbc', key);
+    var myStr = myKey.update(message, 'hex', 'utf8');
+    myStr += myKey.final('utf8');
+    return (myStr)
+}
+
+function encodeRSA(text){
+    return key.encrypt(text, 'base64')
+}
+
+function decodeRSA(message){
+    return key.decrypt(message, 'utf8');
+}
